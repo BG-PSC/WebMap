@@ -84,7 +84,7 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/Rzezimioszek/Files/refs/heads/main/ortofotomapa/DK78/{z}/{x}/{y}.jpg",
+                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/DK78/{z}/{x}/{y}.jpg",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
@@ -167,7 +167,7 @@ class MapFrame(ft.Container):
 
 
         self.image_file = ft.Image(#expand=1,
-                               src="https://raw.githubusercontent.com/Rzezimioszek/Files/main/ortofotomapa/S17K/18/147891/87921.jpg",
+                               src="https://raw.githubusercontent.com/BG-PSC/Files/main/ortofotomapa/S17K/18/147891/87921.jpg",
                                fit=ft.ImageFit.FIT_HEIGHT,
                                 height=400,
         )
@@ -216,7 +216,7 @@ class MapFrame(ft.Container):
 
     def add_lr(self):
 
-        file = requests.get("https://rzezimioszek.github.io/Files/pliki/lr.txt").text
+        file = requests.get("https://bg-psc.github.io/Files/pliki/lr.txt").text
         lines = str(file).split("\n")
 
         current = ""
@@ -310,10 +310,10 @@ class MapFrame(ft.Container):
         spl = str(e.control.text).split(" ")
 
         try:
-            self.image_file.src = f"https://raw.githubusercontent.com/Rzezimioszek/Files/main/pliki/graniczniki/{spl[0]}.jpg"
+            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[0]}.jpg"
             self.image_label.value = f"{spl[0]}"
         except:
-            self.image_file.src = "https://raw.githubusercontent.com/Rzezimioszek/Files/main/ortofotomapa/S17K/18/147891/87921.jpg"
+            self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/ortofotomapa/S17K/18/147891/87921.jpg"
             self.image_label.value = ""
 
         #print(f"click! {e.control.text}")
@@ -386,11 +386,11 @@ def main(page: ft.Page):
     #with open("github.com/Rzezimioszek/WebMapTest2/blob/9445f5ef6688ff60b3acbeecaa78f3c9b2b750f5/assets/punkty.txt", "r") as file:
         #lines = file.readlines()
 
-    file = requests.get("https://rzezimioszek.github.io/Files/pliki/punkty.txt").text
+    file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
     # print(str(file))
     lines = str(file).split("\n")
 
-    file = requests.get("https://rzezimioszek.github.io/Files/pliki/kod-dzialka.txt").text
+    file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
     # print(str(file))
     kody = str(file).split("\n")
 
