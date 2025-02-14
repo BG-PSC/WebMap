@@ -78,7 +78,7 @@ class MapFrame(ft.Container):
                         map.TileLayer(
                             #max_zoom=16,
                             min_zoom=10,
-                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            
                             #url_template="https://mt1.google.com/vt/lyrs=s&hl=pl&x={x}&y={y}&z={z}",
                             # url_template="./{z}/{x}/{y}.jpg",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
@@ -90,6 +90,9 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
                             #on_image_error=lambda e: print("TileLayer Error"),
                             pan_buffer=1,
+                        ),
+                        map.TileLayer(
+                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                         ),
                         map.PolylineLayer(
                             ref=self.lr_ref,
