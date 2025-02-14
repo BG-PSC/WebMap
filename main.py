@@ -76,6 +76,8 @@ class MapFrame(ft.Container):
                     on_event=lambda e: print(e),
                     layers=[
                         map.TileLayer(
+                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        map.TileLayer(
                             #max_zoom=16,
                             min_zoom=10,
                             
@@ -91,8 +93,7 @@ class MapFrame(ft.Container):
                             #on_image_error=lambda e: print("TileLayer Error"),
                             pan_buffer=1,
                         ),
-                        map.TileLayer(
-                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        
                         ),
                         map.PolylineLayer(
                             ref=self.lr_ref,
