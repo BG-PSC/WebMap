@@ -95,7 +95,6 @@ class MapFrame(ft.Container):
                             pan_buffer=1,
                         ),
                         
-                        ),
                         map.PolylineLayer(
                             ref=self.lr_ref,
                             polylines=[]
