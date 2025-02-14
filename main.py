@@ -77,6 +77,7 @@ class MapFrame(ft.Container):
                     layers=[
                         map.TileLayer(
                             url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        ),
                         map.TileLayer(
                             #max_zoom=16,
                             min_zoom=10,
