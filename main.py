@@ -78,7 +78,7 @@ class MapFrame(ft.Container):
                         map.TileLayer(
                             #max_zoom=16,
                             min_zoom=10,
-                            # url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                             #url_template="https://mt1.google.com/vt/lyrs=s&hl=pl&x={x}&y={y}&z={z}",
                             # url_template="./{z}/{x}/{y}.jpg",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
