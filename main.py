@@ -30,7 +30,7 @@ class MapFrame(ft.Container):
         self.pkt = map.MapLatitudeLongitude(50.4717587,19.3718856),
 
         def handle_tap(e: map.MapTapEvent):
-            print(e)
+            #print(e)
             if e.name == "tap":
                 #webbrowser.open("https://bitly.com/")
 
@@ -50,7 +50,8 @@ class MapFrame(ft.Container):
             page.update()
 
         def handle_event(e: map.MapEvent):
-            print(e)
+            pass
+            #print(e)
 
 
 
@@ -69,11 +70,11 @@ class MapFrame(ft.Container):
                     interaction_configuration=map.MapInteractionConfiguration(
                         flags=map.MapInteractiveFlag.ALL
                     ),
-                    on_init=lambda e: print(f"Initialized Map"),
+                    #on_init=lambda e: print(f"Initialized Map"),
                     on_tap=lambda e: handle_tap(e),
                     on_secondary_tap=lambda e: handle_tap(e),
                     on_long_press=lambda e: handle_tap(e),
-                    on_event=lambda e: print(e),
+                    #on_event=lambda e: print(e),
                     layers=[
                         map.TileLayer(
                             url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -87,7 +88,7 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/DK78/{z}/{x}/{y}.jpg",
+                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/DK78png/{z}/{x}/{y}.png",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
@@ -248,7 +249,7 @@ class MapFrame(ft.Container):
 
         for lr in lrs:
             i += 1
-            print(i, lr)
+            #print(i, lr)
             self.lr_ref.current.polylines.append(map.PolylineMarker(
                 border_stroke_width=2,
                 border_color=ft.Colors.RED,
@@ -362,20 +363,47 @@ class MapFrame(ft.Container):
 
 
                     spl = line.split("\t")
+                    print(spl)
                     str_btn = f"{spl[-3]} {spl[-1]} {spl[-2]}".replace("\r", "")
                     btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
                     name_tag = f"{spl[-3]}"
 
 
 
-                    if plot in spl[0]:
+                    if spl[0].startswith(plot):
 
                         self.listControl.controls.append(btn[i])
                         self.add_circle(name_tag, float(spl[-1]), float(spl[-2]))
                         i += 1
         self.pb.visible = False
+        self.zoom_to_all_objects()
 
+    def zoom_to_all_objects(self):
+        if not self.circle_layer_ref.current.circles:
+            return  # Jeśli brak okręgów, nie rób nic
 
+        latitudes = [circle.coordinates.latitude for circle in self.circle_layer_ref.current.circles]
+        longitudes = [circle.coordinates.longitude for circle in self.circle_layer_ref.current.circles]
+
+        if not latitudes or not longitudes:
+            return
+
+        # Obliczenie środka
+        center_lat = (min(latitudes) + max(latitudes)) / 2
+        center_lon = (min(longitudes) + max(longitudes)) / 2
+
+        # Opcjonalnie: dynamiczne określenie zoomu (zakładamy prostą heurystykę)
+        lat_range = max(latitudes) - min(latitudes)
+        lon_range = max(longitudes) - min(longitudes)
+        zoom = max(10, 15 - max(lat_range, lon_range) * 50)  # Dopasowanie zoomu do zakresu danych
+
+        # Przeniesienie mapy na nowy obszar
+        self.main_map.move_to(
+            destination=map.MapLatitudeLongitude(center_lat, center_lon),
+            zoom=int(zoom)
+        )
+
+        self.page.update()
 
 
 
@@ -384,25 +412,28 @@ class MapFrame(ft.Container):
 
 
 def main(page: ft.Page):
-
+    debug = True
     # lines = ["a"]
 
     #with open("github.com/Rzezimioszek/WebMapTest2/blob/9445f5ef6688ff60b3acbeecaa78f3c9b2b750f5/assets/punkty.txt", "r") as file:
         #lines = file.readlines()
 
     file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
+
     # print(str(file))
     lines = str(file).split("\n")
-
     file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
     # print(str(file))
     kody = str(file).split("\n")
-
-    #with open("assets/punkty.txt", "r") as file:
-    #with open("punkty.txt", "r") as file:
-        #lines = file.readlines()
-
-
+    print(kody)
+    if debug:
+        with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
+            lines = file.read().splitlines()
+            
+        with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
+            kody = file.read().splitlines()
+            print("-"*10, "KODY LOKALNE", "-"*10) 
+            print(kody)
 
 
 
