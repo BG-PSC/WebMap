@@ -412,8 +412,8 @@ class MapFrame(ft.Container):
 
                 for line in self.lines:
 
-
                     spl = line.split("\t")
+                    print(spl)
                     lat, lon = float(spl[-1]), float(spl[-2])
                     name_tag = f"{spl[-3]}"
 
@@ -477,20 +477,17 @@ class MapFrame(ft.Container):
         self.page.update()
 
 def main(page: ft.Page):
-    debug = True
+    debug = False
 
-    #rerouting:
-    path = os.getenv("FLET_ROUTE","/")
-    if "/WebMap/" not in path:
-        new_path = "/WebMap/" + path.strip("/")
-        page.go(new_path)
-
-
-
-    file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
+    
+    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main//pliki/punkty.txt").text
+    #file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
     lines = str(file).split("\n")
-    file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
+    lines = [line.strip() for line in lines if line.strip()]
+    #file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
+    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/kod-dzialka.txt").text
     kody = str(file).split("\n")
+    kody = [kod.strip() for kod in kody if kod.strip()]
     
     if debug:
         with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
