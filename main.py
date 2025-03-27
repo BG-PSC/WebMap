@@ -3,6 +3,7 @@ import webbrowser
 import flet as ft
 import flet.map as map
 import random
+import os
 
 import requests
 
@@ -27,7 +28,16 @@ class MapFrame(ft.Container):
         self.label_ref = ft.Ref[map.MarkerLayer]()
         self.lr_ref = ft.Ref[map.PolylineLayer]()
 
-        self.pkt = map.MapLatitudeLongitude(50.4717587,19.3718856),
+        self.main_map = map.Map(
+            layers=[
+                map.MarkerLayer(ref=self.label_ref, markers=[]),
+                map.CircleLayer(ref=self.circle_layer_ref,circles=[]),
+                map.PolylineLayer(ref=self.lr_ref,polylines=[])
+                
+            ]
+        )
+        
+        
 
         def handle_tap(e: map.MapTapEvent):
             #print(e)
@@ -77,13 +87,16 @@ class MapFrame(ft.Container):
                     #on_event=lambda e: print(e),
                     layers=[
                         map.TileLayer(
-                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                            #url_template="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                          
                         ),
                         map.TileLayer(
                             #max_zoom=16,
                             min_zoom=10,
                             
                             #url_template="https://mt1.google.com/vt/lyrs=s&hl=pl&x={x}&y={y}&z={z}",
+                            
                             # url_template="./{z}/{x}/{y}.jpg",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
@@ -94,21 +107,14 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
                             #on_image_error=lambda e: print("TileLayer Error"),
                             pan_buffer=1,
+                            
                         ),
                         
                         map.PolylineLayer(
                             ref=self.lr_ref,
                             polylines=[]
                         ),
-                        map.MarkerLayer(
-                            ref=marker_layer_ref,
-                            markers=[
-                                map.Marker(
-                                    content=ft.Icon(ft.Icons.LOCATION_ON),
-                                    coordinates=map.MapLatitudeLongitude(50.9476241,23.1433150),
-                                ),
-                            ],
-                        ),
+                        
                         map.MarkerLayer(
                             ref=self.label_ref,
                             markers=[],
@@ -117,7 +123,7 @@ class MapFrame(ft.Container):
                             ref=self.circle_layer_ref,
                             circles=[],
                         ),
-
+                        map.SimpleAttribution(text="2025 BG-P.PL, OpenStreetMap contributors, ESRI World Imagery", alignment=ft.alignment.bottom_left)
                     ],
                 )
         map_row = ft.Row([
@@ -142,20 +148,22 @@ class MapFrame(ft.Container):
             self.listControl.visible = not self.listControl.visible
             self.img_stack.visible = not self.img_stack.visible
             self.main_map.visible = not self.main_map.visible
-            if listBtn.text == "Mapa":
-                listBtn.text = "Zdjęcia z ziemi"
+            if listBtn.text == "🗺 Mapa":
+                listBtn.text = "📷 Zdjęcia punktów granicznych"
                 listBtn.tooltip = "Pokaż listę punktów"
                 zoom_to_allBtn.visible =True
+                self.switch_bcgBtn.visible = True
 
             else:
-                listBtn.text = "Mapa"
+                listBtn.text = "🗺 Mapa"
                 listBtn.tooltip = "Pokaż mapę"
                 zoom_to_allBtn.visible = False
+                self.switch_bcgBtn.visible = False
             page.update()
 
 
 
-        listBtn = ft.ElevatedButton("Zdjęcia z ziemi",
+        listBtn = ft.ElevatedButton("📷 Zdjęcia punktów granicznych",
                                     color=ft.Colors.WHITE,
                                     bgcolor=ft.Colors.RED,
                                     on_click=lambda e: listBtn_click(e))
@@ -164,6 +172,8 @@ class MapFrame(ft.Container):
 
         zoom_to_allBtn = ft.ElevatedButton("Pokaż całą mapę",
                                     on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(50.4717587,19.3718856), 13))
+
+        self.switch_bcgBtn = ft.ElevatedButton("SATELITA 🛰", on_click=self.switch_bcg)
 
         self.listControl = ft.ListView(
             expand=1,
@@ -180,9 +190,15 @@ class MapFrame(ft.Container):
         self.image_label = ft.Text("",
                                    color=ft.Colors.WHITE,
                                    bgcolor=ft.Colors.BLACK,)
-
+        self.image_expand =ft.Text("🔳 Powiększ / pobierz",
+                                   color=ft.Colors.WHITE,
+                                   bgcolor=ft.Colors.BLACK,)
+        self.image_navigate =ft.Text("🌐 Nawiguj", color=ft.Colors.WHITE, bgcolor=ft.Colors.BLACK)
+        self.image_pin ="https://www.google.com/maps?q={},{}&label={}"
         self.img_stack = ft.Stack(controls=[self.image_file,
-                                            ft.Container(content=self.image_label, on_click=lambda e:page.launch_url(self.image_file.src), bottom=5, left=5,)
+                                            ft.Container(content=self.image_label, bottom=55, left=5,),
+                                            ft.Container(content=self.image_expand, on_click=lambda e:page.launch_url(self.image_file.src), bottom=30, left=5,),
+                                            ft.Container(content=self.image_navigate, on_click=lambda e:page.launch_url(self.image_pin), bottom=5, left=5,),
                                             ],
                                   )
 
@@ -202,7 +218,7 @@ class MapFrame(ft.Container):
                                                      ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                                     alignment=ft.MainAxisAlignment.END
                                                     ),
-                                          ft.Column([zoom_to_allBtn, listBtn,
+                                          ft.Column([zoom_to_allBtn,self.switch_bcgBtn, listBtn,
                                                   #elBtn
                                                   ],
                                                  alignment=ft.MainAxisAlignment.CENTER,
@@ -214,10 +230,31 @@ class MapFrame(ft.Container):
 
                                 , expand=1)
 
+    def switch_bcg(self, e=None):
+    # Check the current map layer and toggle
+        if hasattr(self, "current_layer") and self.current_layer == "esri":
+            self.main_map.layers[0] = map.TileLayer(
+                url_template="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            
+            )
+            self.current_layer = "osm"
+            self.switch_bcgBtn.text = "🛰 SATELITA"
+        else:
+            self.main_map.layers[0] = map.TileLayer(
+                url_template="https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        
+            )
+            self.current_layer = "esri"
+            self.switch_bcgBtn.text = "🗺 MAPA" # 
+        self.main_map.update()
+        self.page.update()
+
 
     def clear_layers(self):
         self.circle_layer_ref.current.circles.clear()
         self.label_ref.current.markers.clear()
+        print(f"Clearing layers: {len(self.circle_layer_ref.current.circles)}, {len(self.label_ref.current.markers)}")
+        self.main_map.update()
 
     def add_lr(self):
 
@@ -312,15 +349,19 @@ class MapFrame(ft.Container):
     def point_zoom(self, e):
 
 
-        spl = str(e.control.text).split(" ")
-
+        spl = str(e.control.text).split()
+        print(spl)
+        print(len(spl))
         try:
-            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[0]}.jpg"
-            self.image_label.value = f"{spl[0]}"
-        except:
+            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[0]}.jpg"
+            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
+            self.image_label.value = f"📍 {spl[2]}"
+            self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
+            print(self.image_file.src)
+        except Exception as e:
             self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/ortofotomapa/S17K/18/147891/87921.jpg"
             self.image_label.value = ""
-
+            print(e)
         #print(f"click! {e.control.text}")
         #self.main_map.move_to(
         #    destination=map.MapLatitudeLongitude(float(spl[1]), float(spl[2])),
@@ -329,29 +370,39 @@ class MapFrame(ft.Container):
         self.page.update()
 
     def load_values(self, value):
-
+        value=value.upper()
+        self.clear_layers()
         self.listControl.controls.clear()
         self.pb.visible = True
 
         btn = dict()
 
         i = 0
+        seen_points=set() #zbiór unikalnych punktów
         #
         lines = []
         plot = ""
 
-        if value == "all":
+        if value == "ALL":
             for line in self.lines:
                 spl = line.split("\t")
+                lat,lon = float(spl[-1]), float(spl[-2])
+                name_tag = f"{spl[-3]}"
+
+                if (lat,lon) in seen_points:
+                    continue
+
+                seen_points.add((lat,lon))
+
                 str_btn = f"{spl[-3]} {spl[-1]} {spl[-2]}".replace("\r", "")
                 btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
-                name_tag = f"{spl[-3]}"
 
                 self.listControl.controls.append(btn[i])
                 self.add_circle(name_tag, float(spl[-1]), float(spl[-2]))
                 i += 1
 
             self.pb.visible = False
+            self.page.update()
             return
 
         for kod in self.kody:
@@ -363,20 +414,25 @@ class MapFrame(ft.Container):
 
 
                     spl = line.split("\t")
-                    print(spl)
-                    str_btn = f"{spl[-3]} {spl[-1]} {spl[-2]}".replace("\r", "")
-                    btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
+                    lat, lon = float(spl[-1]), float(spl[-2])
                     name_tag = f"{spl[-3]}"
 
-
+                    if (lat,lon) in seen_points:
+                        continue
 
                     if spl[0].startswith(plot):
 
+                        str_btn = f"Numer punktu: {spl[-3]}    B: {spl[-1]}     L: {spl[-2]}".replace("\r", "")
+                        btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
+                        
                         self.listControl.controls.append(btn[i])
                         self.add_circle(name_tag, float(spl[-1]), float(spl[-2]))
                         i += 1
         self.pb.visible = False
         self.zoom_to_all_objects()
+        self.page.update()
+
+
 
     def zoom_to_all_objects(self):
         if not self.circle_layer_ref.current.circles:
@@ -388,16 +444,31 @@ class MapFrame(ft.Container):
         if not latitudes or not longitudes:
             return
 
-        # Obliczenie środka
-        center_lat = (min(latitudes) + max(latitudes)) / 2
-        center_lon = (min(longitudes) + max(longitudes)) / 2
+        # Oblicz bounding box (zakres widocznych punktów)
+        min_lat, max_lat = min(latitudes), max(latitudes)
+        min_lon, max_lon = min(longitudes), max(longitudes)
 
-        # Opcjonalnie: dynamiczne określenie zoomu (zakładamy prostą heurystykę)
-        lat_range = max(latitudes) - min(latitudes)
-        lon_range = max(longitudes) - min(longitudes)
-        zoom = max(10, 15 - max(lat_range, lon_range) * 50)  # Dopasowanie zoomu do zakresu danych
+        # Środek widoku
+        center_lat = (min_lat + max_lat) / 2
+        center_lon = (min_lon + max_lon) / 2
 
-        # Przeniesienie mapy na nowy obszar
+        # Określenie optymalnego zoomu
+        lat_diff = max_lat - min_lat
+        lon_diff = max_lon - min_lon
+        max_diff = max(lat_diff, lon_diff)
+
+        if max_diff < 0.001:
+            zoom = 18  # Bardzo blisko
+        elif max_diff < 0.01:
+            zoom = 17
+        elif max_diff < 0.05:
+            zoom = 15
+        elif max_diff < 0.1:
+            zoom = 14
+        else:
+            zoom = max(12, 15 - max_diff * 30)  # Dynamiczny zoom
+
+        # Przeniesienie mapy
         self.main_map.move_to(
             destination=map.MapLatitudeLongitude(center_lat, center_lon),
             zoom=int(zoom)
@@ -405,35 +476,28 @@ class MapFrame(ft.Container):
 
         self.page.update()
 
-
-
-
-
-
-
 def main(page: ft.Page):
     debug = True
-    # lines = ["a"]
 
-    #with open("github.com/Rzezimioszek/WebMapTest2/blob/9445f5ef6688ff60b3acbeecaa78f3c9b2b750f5/assets/punkty.txt", "r") as file:
-        #lines = file.readlines()
+    #rerouting:
+    path = os.getenv("FLET_ROUTE","/")
+    if "/WebMap/" not in path:
+        new_path = "/WebMap/" + path.strip("/")
+        page.go(new_path)
+
+
 
     file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
-
-    # print(str(file))
     lines = str(file).split("\n")
     file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
-    # print(str(file))
     kody = str(file).split("\n")
-    print(kody)
+    
     if debug:
         with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
             lines = file.read().splitlines()
             
         with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
             kody = file.read().splitlines()
-            print("-"*10, "KODY LOKALNE", "-"*10) 
-            print(kody)
 
 
 
@@ -444,9 +508,9 @@ def main(page: ft.Page):
     def submit_on_clik(e):
         #mf.visible = not mf.visible
         mf.clear_layers()
-        mf.load_values(query.value)
-        #query.value
         page.update()
+        #query.value
+        mf.load_values(query.value)
 
     query = ft.TextField(label="Wprowadź kod otrzymany w zawiadomieniu",
                          on_submit= lambda e: submit_on_clik(e),
@@ -456,15 +520,32 @@ def main(page: ft.Page):
                                on_click= lambda e: submit_on_clik(e),
                                height=50,
                                col={"xs": 12, "sm": 12, "md": 1})
-
     mf = MapFrame(page, lines, kody)
     #mf.visible = False
     # main_row.controls.append(mf)
 
-    page.add(ft.ResponsiveRow([
-        # label,
-        query,
-        submit], alignment=ft.MainAxisAlignment.CENTER))
+    #page.add(ft.ResponsiveRow([
+    #    query,
+    #    submit], alignment=ft.MainAxisAlignment.CENTER))
+
+    logo =ft.Image(
+            src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/icon.png",
+            width=100,
+            height=100,
+            fit=ft.ImageFit.CONTAIN)
+
+    form_row = ft.Row(
+        controls=[query,submit], 
+        alignment=ft.MainAxisAlignment.CENTER)
+    
+    main_row = ft.Row(
+        controls=[logo,  ft.Container(content=form_row, alignment=ft.alignment.center)],
+        alignment=ft.MainAxisAlignment.START,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+
+    )
+    page.add(main_row)
+
     page.add(mf)
 
     page.theme_mode = ft.ThemeMode.LIGHT
