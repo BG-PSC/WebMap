@@ -526,7 +526,7 @@ def main(page: ft.Page):
     #    submit], alignment=ft.MainAxisAlignment.CENTER))
 
     logo =ft.Image(
-            src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/icon.png",
+            src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/logo.png",
             width=100,
             height=100,
             fit=ft.ImageFit.CONTAIN)
@@ -535,10 +535,10 @@ def main(page: ft.Page):
         controls=[query,submit], 
         alignment=ft.MainAxisAlignment.CENTER)
     
-    main_row = ft.Row(
-        controls=[logo,  ft.Container(content=form_row, alignment=ft.alignment.center)],
+    main_row = ft.ResponsiveRow(
+        controls=[logo,  form_row],
         alignment=ft.MainAxisAlignment.START,
-        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        vertical_alignment=ft.CrossAxisAlignment.START,
 
     )
     page.add(main_row)
