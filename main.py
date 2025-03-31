@@ -20,7 +20,7 @@ class MapFrame(ft.Container):
 
         self.expand = 1
         self.border_radius = ft.border_radius.all(10)
-        self.bgcolor = ft.colors.WHITE
+        self.bgcolor = ft.Colors.WHITE
         # self.col=12
 
         marker_layer_ref = ft.Ref[map.MarkerLayer]()
@@ -69,7 +69,7 @@ class MapFrame(ft.Container):
                                       [ft.Text("Click anywhere to add a Marker, right-click to add a CircleMarker.")]
         ),
             border_radius=ft.border_radius.all(10),
-                          bgcolor=ft.colors.with_opacity(0.6, ft.colors.PRIMARY_CONTAINER),
+                          bgcolor=ft.Colors.with_opacity(0.6, ft.Colors.PRIMARY_CONTAINER),
                           padding=5,
                           blur=15)
 
@@ -77,6 +77,8 @@ class MapFrame(ft.Container):
                     expand=True,
                     initial_center=map.MapLatitudeLongitude(50.4717587,19.3718856),
                     initial_zoom=13,
+                    min_zoom=10,
+                    max_zoom=19,
                     interaction_configuration=map.MapInteractionConfiguration(
                         flags=map.MapInteractiveFlag.ALL
                     ),
@@ -223,7 +225,7 @@ class MapFrame(ft.Container):
                                                   ],
                                                  alignment=ft.MainAxisAlignment.CENTER,
                                                     horizontal_alignment=ft.CrossAxisAlignment.END,
-                                                    bottom=5, right=5
+                                                    bottom=15, right=5
                                                     ),
                                           ft.Column([self.pb], top=5, left=5)
                                           ]
@@ -350,8 +352,8 @@ class MapFrame(ft.Container):
 
 
         spl = str(e.control.text).split()
-        print(spl)
-        print(len(spl))
+        #print(spl)
+        #print(len(spl))
         try:
             #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[0]}.jpg"
             self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
@@ -413,7 +415,6 @@ class MapFrame(ft.Container):
                 for line in self.lines:
 
                     spl = line.split("\t")
-                    print(spl)
                     lat, lon = float(spl[-1]), float(spl[-2])
                     name_tag = f"{spl[-3]}"
 
@@ -496,12 +497,10 @@ def main(page: ft.Page):
         with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
             kody = file.read().splitlines()
 
-
-
-    label = ft.Text(f"Wprowadź kod otrzymany w zawiadomieniu", # {lines[0]}",
-                    col={"xs": 12, "sm": 12, "md": 4})
     # main_row.controls.append(label)
 
+    mf = MapFrame(page, lines, kody)
+    
     def submit_on_clik(e):
         #mf.visible = not mf.visible
         mf.clear_layers()
@@ -512,35 +511,44 @@ def main(page: ft.Page):
     query = ft.TextField(label="Wprowadź kod otrzymany w zawiadomieniu",
                          on_submit= lambda e: submit_on_clik(e),
                          height=50,
-                         col={"xs": 12, "sm": 12, "md": 3})
-    submit = ft.ElevatedButton("Zatwierdz",
+                         col={"xs": 4, "sm": 4, "md": 3})
+    submit = ft.ElevatedButton("Zatwierdź",
                                on_click= lambda e: submit_on_clik(e),
                                height=50,
-                               col={"xs": 12, "sm": 12, "md": 1})
-    mf = MapFrame(page, lines, kody)
-    #mf.visible = False
-    # main_row.controls.append(mf)
+                               bgcolor=ft.Colors.PRIMARY,
+                               color=ft.Colors.ON_PRIMARY,
+                               col={"xs": 3, "sm": 3, "md": 1})
 
-    #page.add(ft.ResponsiveRow([
-    #    query,
-    #    submit], alignment=ft.MainAxisAlignment.CENTER))
-
-    logo =ft.Image(
+    logo =ft.GestureDetector(
+        content =ft.Image(
             src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/logo.png",
-            width=100,
-            height=100,
-            fit=ft.ImageFit.CONTAIN)
+            width=50,
+            height=50,
+            fit=ft.ImageFit.CONTAIN),
+        on_tap=lambda e: page.launch_url("https://bg-p.pl"),
+        mouse_cursor=ft.MouseCursor.CLICK,
+        col={"xs": 1, "sm": 1, "md": 1})
+    
 
-    form_row = ft.Row(
-        controls=[query,submit], 
-        alignment=ft.MainAxisAlignment.CENTER)
+
+    aboutBtn = ft.ElevatedButton(
+        content=ft.Row(
+            controls=[
+                ft.Image(src="https://raw.githubusercontent.com/BG-PSC/WebMap/refs/heads/main/assets/gddkia.png", width=40, height=40),
+                ft.Text("O inwestycji", color=ft.Colors.DEEP_ORANGE)
+            ]
+        ),
+        on_click=lambda e: page.launch_url("https://dk78poreba-zawiercie-obw1.pl/"),
+        col={"xs": 3, "sm": 3, "md": 1},
+        height=50
+    )
     
     main_row = ft.ResponsiveRow(
-        controls=[logo,  form_row],
-        alignment=ft.MainAxisAlignment.START,
+        controls=[logo,  query,submit ,aboutBtn],
+        alignment=ft.MainAxisAlignment.CENTER,
         vertical_alignment=ft.CrossAxisAlignment.START,
-
     )
+
     page.add(main_row)
 
     page.add(mf)
