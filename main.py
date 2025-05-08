@@ -351,8 +351,8 @@ class MapFrame(ft.Container):
         #print(spl)
         #print(len(spl))
         try:
-            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[2]}.jpg"
-            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
+            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_v2/{spl[2]}.jpg"
+            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
             print(self.image_file.src)
