@@ -78,7 +78,7 @@ class MapFrame(ft.Container):
                     initial_center=map.MapLatitudeLongitude(50.4717587,19.3718856),
                     initial_zoom=13,
                     min_zoom=10,
-                    max_zoom=19,
+                    max_zoom=21,
                     interaction_configuration=map.MapInteractionConfiguration(
                         flags=map.MapInteractiveFlag.ALL
                     ),
@@ -94,11 +94,7 @@ class MapFrame(ft.Container):
                           
                         ),
                         map.TileLayer(
-                            #max_zoom=16,
-                            min_zoom=10,
-                            
                             #url_template="https://mt1.google.com/vt/lyrs=s&hl=pl&x={x}&y={y}&z={z}",
-                            
                             # url_template="./{z}/{x}/{y}.jpg",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
@@ -355,7 +351,7 @@ class MapFrame(ft.Container):
         #print(spl)
         #print(len(spl))
         try:
-            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[0]}.jpg"
+            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{spl[2]}.jpg"
             self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
@@ -478,7 +474,7 @@ class MapFrame(ft.Container):
         self.page.update()
 
 def main(page: ft.Page):
-    debug = False
+    debug = True
 
     
     file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main//pliki/punkty.txt").text
@@ -539,12 +535,12 @@ def main(page: ft.Page):
             ]
         ),
         on_click=lambda e: page.launch_url("https://dk78poreba-zawiercie-obw1.pl/"),
-        col={"xs": 3, "sm": 3, "md": 1},
+        col={"xs": 3, "sm": 3, "md": 1.5},
         height=50
     )
     
     main_row = ft.ResponsiveRow(
-        controls=[logo,  query,submit ,aboutBtn],
+        controls=[logo,  query,submit, aboutBtn],
         alignment=ft.MainAxisAlignment.CENTER,
         vertical_alignment=ft.CrossAxisAlignment.START,
     )
