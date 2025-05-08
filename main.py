@@ -474,7 +474,7 @@ class MapFrame(ft.Container):
         self.page.update()
 
 def main(page: ft.Page):
-    debug = True
+    debug = False
 
     
     file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main//pliki/punkty.txt").text
