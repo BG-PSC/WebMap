@@ -27,12 +27,14 @@ class MapFrame(ft.Container):
         self.circle_layer_ref = ft.Ref[map.CircleLayer]()
         self.label_ref = ft.Ref[map.MarkerLayer]()
         self.lr_ref = ft.Ref[map.PolylineLayer]()
+        self.plot_ref = ft.Ref[map.PolylineLayer]()
 
         self.main_map = map.Map(
             layers=[
                 map.MarkerLayer(ref=self.label_ref, markers=[]),
                 map.CircleLayer(ref=self.circle_layer_ref,circles=[]),
-                map.PolylineLayer(ref=self.lr_ref,polylines=[])
+                map.PolylineLayer(ref=self.lr_ref,polylines=[]),
+                map.PolylineLayer(ref=self.plot_ref,polylines=[])
                 
             ]
         )
@@ -205,6 +207,7 @@ class MapFrame(ft.Container):
         self.listControl.visible = False
         self.img_stack.visible = False
 
+        self.add_plots()
         self.add_lr()
         self.pb = ft.Row([ft.ProgressRing(width=16, height=16, stroke_width = 2), ft.Text("Ładowanie danych")])
         self.pb.visible = False
@@ -293,6 +296,47 @@ class MapFrame(ft.Container):
                     *lr
                 ]
             ))
+
+    def add_plots(self):
+
+        file = requests.get("https://bg-psc.github.io/Files/pliki/dzialki.txt").text
+        lines = str(file).split("\n")
+
+        current = ""
+        temp_l = []
+        lrs = []
+
+        for line in lines:
+            temp = line.split("\t")
+            if current == "":
+                current = temp[0]
+
+            if current == temp[0]:
+                temp_l.append(map.MapLatitudeLongitude(float(temp[3]), float(temp[2])))
+            else:
+                if len(temp_l) > 0:
+                    lrs.append(temp_l.copy())
+                    temp_l.clear()
+                current = temp[0]
+                temp_l.append(map.MapLatitudeLongitude(float(temp[3]), float(temp[2])))
+        lrs.append(temp_l)
+
+        # print(lrs)
+
+        i = 0
+
+        for lr in lrs:
+            i += 1
+            #print(i, lr)
+            self.lr_ref.current.polylines.append(map.PolylineMarker(
+                border_stroke_width=1,
+                border_color=ft.Colors.BLUE,
+                color=ft.Colors.BLUE,
+                coordinates=[
+                    *lr
+                ]
+            ))
+
 
     def add_circle(self, name_tag,lat, lon):
 
