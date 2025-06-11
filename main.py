@@ -26,6 +26,7 @@ class MapFrame(ft.Container):
         marker_layer_ref = ft.Ref[map.MarkerLayer]()
         self.circle_layer_ref = ft.Ref[map.CircleLayer]()
         self.label_ref = ft.Ref[map.MarkerLayer]()
+        self.label_ref_plots = ft.Ref[map.MarkerLayer]()
         self.lr_ref = ft.Ref[map.PolylineLayer]()
         self.plot_ref = ft.Ref[map.PolylineLayer]()
 
@@ -119,6 +120,11 @@ class MapFrame(ft.Container):
                             ref=self.label_ref,
                             markers=[],
                         ),
+                        map.MarkerLayer(
+                            ref=self.label_ref_plots,
+                            markers=[],
+                        ),
+
                         map.CircleLayer(
                             ref=self.circle_layer_ref,
                             circles=[],
@@ -209,6 +215,7 @@ class MapFrame(ft.Container):
 
         self.add_plots()
         self.add_lr()
+        self.add_labels()
         self.pb = ft.Row([ft.ProgressRing(width=16, height=16, stroke_width = 2), ft.Text("Ładowanie danych")])
         self.pb.visible = False
 
@@ -296,6 +303,16 @@ class MapFrame(ft.Container):
                     *lr
                 ]
             ))
+    def add_labels(self):
+        file = requests.get("https://bg-psc.github.io/Files/pliki/etykiety.txt")
+        lines = str(file).split("\n")
+        
+        markers = []
+        for punkt in lines:
+            print(punkt)
+         
+            
+
 
     def add_plots(self):
 
@@ -461,7 +478,7 @@ class MapFrame(ft.Container):
                     if (lat,lon) in seen_points:
                         continue
 
-                    if spl[0].startswith(plot):
+                    if spl[0] ==plot:
 
                         str_btn = f"Numer punktu: {spl[-3]}    B: {spl[-1]}     L: {spl[-2]}".replace("\r", "")
                         btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
