@@ -78,8 +78,8 @@ class MapFrame(ft.Container):
 
         self.main_map = map.Map(
                     expand=True,
-                    initial_center=map.MapLatitudeLongitude(50.4717587,19.3718856),
-                    initial_zoom=13,
+                    initial_center=map.MapLatitudeLongitude(51.1649819320,21.6383970534),
+                    initial_zoom=14,
                     min_zoom=10,
                     max_zoom=21,
                     interaction_configuration=map.MapInteractionConfiguration(
@@ -102,7 +102,7 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/DK78v2/{z}/{x}/{y}.png",
+                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/zawiercie/{z}/{x}/{y}.png",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
@@ -277,7 +277,7 @@ class MapFrame(ft.Container):
             temp = line.split("\t")
             if current == "":
                 current = temp[0]
-
+                print(current)
             if current == temp[0]:
                 temp_l.append(map.MapLatitudeLongitude(float(temp[3]), float(temp[2])))
             else:
@@ -304,10 +304,11 @@ class MapFrame(ft.Container):
                 ]
             ))
     def add_labels(self):
-        file = requests.get("https://bg-psc.github.io/Files/pliki/etykiety.txt")
+        file = requests.get("https://bg-psc.github.io/Files/pliki/etykiety.txt").text
+        print(file)
         lines = str(file).split("\n")
         
-        markers = []
+
         for punkt in lines:
             print(punkt)
          
@@ -386,7 +387,7 @@ class MapFrame(ft.Container):
                     text_align=ft.TextAlign.LEFT
                 ),
             ],),
-            alignment=ft.alignment.top_right,
+            alignment=ft.alignment.top_center,
             width=70,
             coordinates=map.MapLatitudeLongitude(lat, lon)
         )
@@ -412,13 +413,13 @@ class MapFrame(ft.Container):
         #print(spl)
         #print(len(spl))
         try:
-            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_v2/{spl[2]}.jpg"
+            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_lipsko/{spl[2]}.jpg"
             #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
             print(self.image_file.src)
         except Exception as e:
-            self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/ortofotomapa/S17K/18/147891/87921.jpg"
+            self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = ""
             print(e)
         #print(f"click! {e.control.text}")
@@ -547,6 +548,7 @@ def main(page: ft.Page):
     kody = str(file).split("\n")
     kody = [kod.strip() for kod in kody if kod.strip()]
     
+    
     if debug:
         with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
             lines = file.read().splitlines()
@@ -595,7 +597,7 @@ def main(page: ft.Page):
                 ft.Text("O inwestycji", color=ft.Colors.DEEP_ORANGE)
             ]
         ),
-        on_click=lambda e: page.launch_url("https://dk78poreba-zawiercie-obw1.pl/"),
+        on_click=lambda e: page.launch_url("https://www.dk79-obwodnicalipska.pl/"),
         col={"xs": 3, "sm": 3, "md": 1.5},
         height=50
     )
