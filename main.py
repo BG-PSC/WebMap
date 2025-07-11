@@ -102,7 +102,7 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/zawiercie/{z}/{x}/{y}.png",
+                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/lipsko/{z}/{x}/{y}.png",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
@@ -177,7 +177,7 @@ class MapFrame(ft.Container):
         listBtn.tooltip = "Pokaż listę punktów"
 
         zoom_to_allBtn = ft.ElevatedButton("Pokaż całą mapę",
-                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(50.4717587,19.3718856), 13))
+                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(51.1649819320,21.6383970534), 13))
 
         self.switch_bcgBtn = ft.ElevatedButton("SATELITA 🛰", on_click=self.switch_bcg)
 
@@ -413,8 +413,12 @@ class MapFrame(ft.Container):
         #print(spl)
         #print(len(spl))
         try:
-            self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_lipsko/{spl[2]}.jpg"
-            #self.image_file.src = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/D1000.jpg" #debug!!!
+            image_url = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_lipsko/{spl[2]}.jpg"
+            response = requests.head(image_url)
+            if response.status_code == 200:
+                self.image_file.src = image_url
+            else:
+                self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
             print(self.image_file.src)
