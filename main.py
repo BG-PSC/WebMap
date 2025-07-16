@@ -303,18 +303,56 @@ class MapFrame(ft.Container):
                     *lr
                 ]
             ))
+         
+    def add_label(self,text,lat,lon):
+        
+        new_marker = map.Marker(
+            content=ft.Stack([
+                ft.Text(
+                    spans=[
+                        ft.TextSpan(
+                            f"{text}",
+                            ft.TextStyle(
+                                size=8,
+                                weight=ft.FontWeight.BOLD,
+                                foreground=ft.Paint(
+                                color=ft.Colors.WHITE,
+                                    stroke_width=2,
+                                    stroke_join=ft.StrokeJoin.ROUND,
+                                    style=ft.PaintingStyle.STROKE,
+                                ),
+                            ),
+                        ),
+                    ],
+                    text_align=ft.TextAlign.LEFT
+                ),
+                ft.Text(
+                    value=f"{text}",
+                   
+                    color=ft.Colors.BLUE,
+                    size=8,
+                    weight=ft.FontWeight.BOLD,
+                    text_align=ft.TextAlign.LEFT
+                ),
+            ],),
+            alignment=ft.alignment.top_center,
+            width=70,
+            coordinates=map.MapLatitudeLongitude(lat, lon)
+        )
+        self.label_ref_plots.current.markers.append(new_marker)
+        #self.page.update()
+
     def add_labels(self):
         file = requests.get("https://bg-psc.github.io/Files/pliki/etykiety.txt").text
-        print(file)
         lines = str(file).split("\n")
-        
 
         for punkt in lines:
-            print(punkt)
-         
-            
-
-
+            punkt = punkt.split()
+            self.add_label(punkt[0],float(punkt[2]),float(punkt[1]))
+            print("Point added")
+            print(punkt[0],punkt[1],punkt[2])
+    
+    
     def add_plots(self):
 
         file = requests.get("https://bg-psc.github.io/Files/pliki/dzialki.txt").text
