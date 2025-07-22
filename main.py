@@ -277,7 +277,6 @@ class MapFrame(ft.Container):
             temp = line.split("\t")
             if current == "":
                 current = temp[0]
-                print(current)
             if current == temp[0]:
                 temp_l.append(map.MapLatitudeLongitude(float(temp[3]), float(temp[2])))
             else:
@@ -324,7 +323,7 @@ class MapFrame(ft.Container):
                             ),
                         ),
                     ],
-                    text_align=ft.TextAlign.LEFT
+                    text_align=ft.TextAlign.CENTER
                 ),
                 ft.Text(
                     value=f"{text}",
@@ -335,7 +334,7 @@ class MapFrame(ft.Container):
                     text_align=ft.TextAlign.LEFT
                 ),
             ],),
-            alignment=ft.alignment.top_center,
+            alignment=ft.alignment.center,
             width=70,
             coordinates=map.MapLatitudeLongitude(lat, lon)
         )
@@ -349,8 +348,7 @@ class MapFrame(ft.Container):
         for punkt in lines:
             punkt = punkt.split()
             self.add_label(punkt[0],float(punkt[2]),float(punkt[1]))
-            print("Point added")
-            print(punkt[0],punkt[1],punkt[2])
+
     
     
     def add_plots(self):
