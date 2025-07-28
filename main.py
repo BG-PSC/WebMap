@@ -166,6 +166,7 @@ class MapFrame(ft.Container):
                 zoom_to_allBtn.visible = False
                 self.switch_bcgBtn.visible = False
             page.update()
+            self.zoom_to_all_objects()
 
 
 
