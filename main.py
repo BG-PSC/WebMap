@@ -115,13 +115,13 @@ class MapFrame(ft.Container):
                             ref=self.lr_ref,
                             polylines=[]
                         ),
+                        map.MarkerLayer(
+                            ref=self.label_ref_plots,
+                            markers=[],
+                        ),
                         
                         map.MarkerLayer(
                             ref=self.label_ref,
-                            markers=[],
-                        ),
-                        map.MarkerLayer(
-                            ref=self.label_ref_plots,
                             markers=[],
                         ),
 
@@ -457,8 +457,9 @@ class MapFrame(ft.Container):
                 self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
-            print(self.image_file.src)
+            print(spl)
         except Exception as e:
+            print(spl)
             self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = ""
             print(e)
@@ -494,7 +495,7 @@ class MapFrame(ft.Container):
 
                 seen_points.add((lat,lon))
 
-                str_btn = f"{spl[-3]} {spl[-1]} {spl[-2]}".replace("\r", "")
+                str_btn = f"Numer punktu: {spl[-3]}    B: {spl[-1]}     L: {spl[-2]}".replace("\r", "")
                 btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
 
                 self.listControl.controls.append(btn[i])
@@ -520,6 +521,7 @@ class MapFrame(ft.Container):
                         continue
 
                     if spl[0] ==plot:
+                        seen_points.add((lat,lon))
 
                         str_btn = f"Numer punktu: {spl[-3]}    B: {spl[-1]}     L: {spl[-2]}".replace("\r", "")
                         btn[i] = ft.ElevatedButton(str_btn, on_click=lambda e: self.point_zoom(e))
