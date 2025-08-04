@@ -43,7 +43,7 @@ class MapFrame(ft.Container):
         
 
         def handle_tap(e: map.MapTapEvent):
-            #print(e)
+
             if e.name == "tap":
                 #webbrowser.open("https://bitly.com/")
 
@@ -64,7 +64,6 @@ class MapFrame(ft.Container):
 
         def handle_event(e: map.MapEvent):
             pass
-            #print(e)
 
 
 
@@ -132,12 +131,7 @@ class MapFrame(ft.Container):
                         map.SimpleAttribution(text="2025 BG-P.PL, OpenStreetMap contributors, ESRI World Imagery", alignment=ft.alignment.bottom_left)
                     ],
                 )
-        map_row = ft.Row([
-            # label,
-            # main_map
-        ])
 
-        # self.content=map_row
 
         def elBtn_click(e):
             url = f"https://www.google.pl/maps/place/{self.pkt.latitude:.5f},{self.pkt.longitude:.5f}"
@@ -447,8 +441,6 @@ class MapFrame(ft.Container):
 
 
         spl = str(e.control.text).split()
-        #print(spl)
-        #print(len(spl))
         try:
             image_url = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki_lipsko/{spl[2]}.jpg"
             response = requests.head(image_url)
@@ -464,11 +456,7 @@ class MapFrame(ft.Container):
             self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = ""
             print(e)
-        #print(f"click! {e.control.text}")
-        #self.main_map.move_to(
-        #    destination=map.MapLatitudeLongitude(float(spl[1]), float(spl[2])),
-        #    #zoom=19
-        #)
+
         self.page.update()
 
     def load_values(self, value):
