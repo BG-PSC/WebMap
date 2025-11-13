@@ -261,7 +261,7 @@ class MapFrame(ft.Container):
 
     def add_lr(self):
 
-        file = requests.get("https://bg-psc.github.io/Files/pliki/lr.txt").text
+        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/lr.txt").text
         lines = str(file).split("\n")
 
         current = ""
@@ -337,7 +337,7 @@ class MapFrame(ft.Container):
         #self.page.update()
 
     def add_labels(self):
-        file = requests.get("https://bg-psc.github.io/Files/pliki/etykiety.txt").text
+        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/etykiety.txt").text
         lines = str(file).split("\n")
 
         for punkt in lines:
@@ -348,7 +348,7 @@ class MapFrame(ft.Container):
     
     def add_plots(self):
 
-        file = requests.get("https://bg-psc.github.io/Files/pliki/dzialki.txt").text
+        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/dzialki.txt").text
         lines = str(file).split("\n")
 
         current = ""
@@ -570,12 +570,12 @@ def main(page: ft.Page):
     debug = False
 
     
-    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main//pliki/punkty.txt").text
+    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/suchowola/punkty.txt").text
     #file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
     lines = str(file).split("\n")
     lines = [line.strip() for line in lines if line.strip()]
     #file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
-    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/kod-dzialka.txt").text
+    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/suchowola/kod-dzialka.txt").text
     kody = str(file).split("\n")
     kody = [kod.strip() for kod in kody if kod.strip()]
     
