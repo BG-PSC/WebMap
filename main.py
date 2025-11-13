@@ -77,8 +77,8 @@ class MapFrame(ft.Container):
 
         self.main_map = map.Map(
                     expand=True,
-                    initial_center=map.MapLatitudeLongitude(51.1649819320,21.6383970534),
-                    initial_zoom=14,
+                    initial_center=map.MapLatitudeLongitude(53.5429174879,23.1143806578),
+                    initial_zoom=12,
                     min_zoom=10,
                     max_zoom=21,
                     interaction_configuration=map.MapInteractionConfiguration(
@@ -172,7 +172,7 @@ class MapFrame(ft.Container):
         listBtn.tooltip = "Pokaż listę punktów"
 
         zoom_to_allBtn = ft.ElevatedButton("Pokaż całą mapę",
-                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(51.1649819320,21.6383970534), 13))
+                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(53.5429174879,23.1143806578), 12))
 
         self.switch_bcgBtn = ft.ElevatedButton("SATELITA 🛰", on_click=self.switch_bcg)
 
@@ -378,7 +378,7 @@ class MapFrame(ft.Container):
             i += 1
             #print(i, lr)
             self.lr_ref.current.polylines.append(map.PolylineMarker(
-                border_stroke_width=1,
+                border_stroke_width=0.5,
                 border_color=ft.Colors.BLUE,
                 color=ft.Colors.BLUE,
                 coordinates=[
