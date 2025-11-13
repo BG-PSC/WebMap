@@ -66,7 +66,6 @@ class MapFrame(ft.Container):
             pass
 
 
-
         label = ft.Container(content=ft.Row(
                                       [ft.Text("Click anywhere to add a Marker, right-click to add a CircleMarker.")]
         ),
@@ -162,6 +161,7 @@ class MapFrame(ft.Container):
             page.update()
             self.zoom_to_all_objects()
 
+       
 
 
         listBtn = ft.ElevatedButton("📷 Zdjęcia punktów granicznych",
@@ -175,6 +175,9 @@ class MapFrame(ft.Container):
                                     on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(53.5429174879,23.1143806578), 12))
 
         self.switch_bcgBtn = ft.ElevatedButton("SATELITA 🛰", on_click=self.switch_bcg)
+
+        self.hide_labelsBtn = ft.ElevatedButton("Uryj numery działek", on_click=self.hide_labels)
+
 
         self.listControl = ft.ListView(
             expand=1,
@@ -207,7 +210,7 @@ class MapFrame(ft.Container):
         # extras_row.visible = False
         self.listControl.visible = False
         self.img_stack.visible = False
-
+        self.labels_visibility = True
         self.add_plots()
         self.add_lr()
         self.add_labels()
@@ -221,7 +224,7 @@ class MapFrame(ft.Container):
                                                      ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                                     alignment=ft.MainAxisAlignment.END
                                                     ),
-                                          ft.Column([zoom_to_allBtn,self.switch_bcgBtn, listBtn,
+                                          ft.Column([zoom_to_allBtn,self.switch_bcgBtn, listBtn, self.hide_labelsBtn,
                                                   #elBtn
                                                   ],
                                                  alignment=ft.MainAxisAlignment.CENTER,
@@ -251,7 +254,22 @@ class MapFrame(ft.Container):
             self.switch_bcgBtn.text = "🗺 MAPA" # 
         self.main_map.update()
         self.page.update()
+     
+    def hide_labels(self, e=None):
+            if self.labels_visibility:
+                self.labels_visibility = False
+                self.hide_labelsBtn.text = "Pokaż numery działek"
 
+                self.main_map.layers[3].visible = False
+            else:
+                self.labels_visibility = True
+                self.main_map.layers[3].visible = True
+                self.hide_labelsBtn.text = "Ukryj numery działek"
+
+            self.page.update()
+
+    def on_zoom_changed(e):
+        current_zoom = e.control.zoom
 
     def clear_layers(self):
         self.circle_layer_ref.current.circles.clear()
