@@ -1,10 +1,7 @@
 import webbrowser
 
 import flet as ft
-import flet.map as map
-import random
-import os
-
+import flet_map as map
 import requests
 
 class PointButton(ft.TextButton):
@@ -17,6 +14,10 @@ class MapFrame(ft.Container):
 
         self.lines = lines
         self.kody = kody
+        self.page = page
+        print("Reset mapy")
+        self.current_center = map.MapLatitudeLongitude(53.5429174879,23.1143806578)
+        self.current_zoom = 12
 
         self.expand = 1
         self.border_radius = ft.border_radius.all(10)
@@ -29,19 +30,18 @@ class MapFrame(ft.Container):
         self.label_ref_plots = ft.Ref[map.MarkerLayer]()
         self.lr_ref = ft.Ref[map.PolylineLayer]()
         self.plot_ref = ft.Ref[map.PolylineLayer]()
+        self.marked_ref = ft.Ref[map.CircleLayer]
 
         self.main_map = map.Map(
             layers=[
                 map.MarkerLayer(ref=self.label_ref, markers=[]),
                 map.CircleLayer(ref=self.circle_layer_ref,circles=[]),
                 map.PolylineLayer(ref=self.lr_ref,polylines=[]),
-                map.PolylineLayer(ref=self.plot_ref,polylines=[])
-                
+                map.PolylineLayer(ref=self.plot_ref,polylines=[]),
+                map.CircleLayer(ref=self.marked_ref,circles=[])
             ]
         )
         
-        
-
         def handle_tap(e: map.MapTapEvent):
 
             if e.name == "tap":
@@ -76,7 +76,7 @@ class MapFrame(ft.Container):
 
         self.main_map = map.Map(
                     expand=True,
-                    initial_center=map.MapLatitudeLongitude(53.5429174879,23.1143806578),
+                    initial_center=self.current_center,
                     initial_zoom=12,
                     min_zoom=10,
                     max_zoom=21,
@@ -84,9 +84,7 @@ class MapFrame(ft.Container):
                         flags=map.MapInteractiveFlag.ALL
                     ),
                     #on_init=lambda e: print(f"Initialized Map"),
-                    on_tap=lambda e: handle_tap(e),
-                    on_secondary_tap=lambda e: handle_tap(e),
-                    on_long_press=lambda e: handle_tap(e),
+                    on_position_change=lambda e: self.on_map_event(e),
                     #on_event=lambda e: print(e),
                     layers=[
                         map.TileLayer(
@@ -108,7 +106,6 @@ class MapFrame(ft.Container):
                             pan_buffer=1,
                             
                         ),
-                        
                         map.PolylineLayer(
                             ref=self.lr_ref,
                             polylines=[]
@@ -127,9 +124,15 @@ class MapFrame(ft.Container):
                             ref=self.circle_layer_ref,
                             circles=[],
                         ),
+                        map.CircleLayer(
+                            ref=self.marked_ref, # type: ignore
+                            circles=[]
+                        ),
                         map.SimpleAttribution(text="2025 BG-P.PL, OpenStreetMap contributors, ESRI World Imagery", alignment=ft.alignment.bottom_left)
                     ],
                 )
+
+
 
 
         def elBtn_click(e):
@@ -146,20 +149,22 @@ class MapFrame(ft.Container):
         def listBtn_click(e):
             self.listControl.visible = not self.listControl.visible
             self.img_stack.visible = not self.img_stack.visible
-            self.main_map.visible = not self.main_map.visible
+            #self.main_map.visible = not self.main_map.visible
             if listBtn.text == "🗺 Mapa":
                 listBtn.text = "📷 Zdjęcia punktów granicznych"
                 listBtn.tooltip = "Pokaż listę punktów"
                 zoom_to_allBtn.visible =True
                 self.switch_bcgBtn.visible = True
+                self.main_map.layers[4].visible = True
 
             else:
                 listBtn.text = "🗺 Mapa"
                 listBtn.tooltip = "Pokaż mapę"
                 zoom_to_allBtn.visible = False
                 self.switch_bcgBtn.visible = False
+                self.main_map.layers[4].visible = False
             page.update()
-            self.zoom_to_all_objects()
+            #self.zoom_to_all_objects()
 
        
 
@@ -235,6 +240,15 @@ class MapFrame(ft.Container):
                                           ]
 
                                 , expand=1)
+    def on_map_event(self, e:map.MapEvent):
+        try:
+            if hasattr(e,'coordinates') and e.coordinates:
+                
+                self.current_center = e.coordinates
+            if hasattr(e, 'zoom') and e.zoom:
+                self.current_zoom = e.zoom
+        except Exception as err:
+            print("Błąd przt aktualizacji centrum: {err}")
 
     def switch_bcg(self, e=None):
     # Check the current map layer and toggle
@@ -268,8 +282,8 @@ class MapFrame(ft.Container):
 
             self.page.update()
 
-    def on_zoom_changed(e):
-        current_zoom = e.control.zoom
+   
+        
 
     def clear_layers(self):
         self.circle_layer_ref.current.circles.clear()
@@ -455,7 +469,7 @@ class MapFrame(ft.Container):
 
         self.page.update()
 
-    def point_zoom(self, e):
+    def point_zoom(self,e):
 
 
         spl = str(e.control.text).split()
@@ -468,7 +482,7 @@ class MapFrame(ft.Container):
                 self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
             self.image_label.value = f"📍 {spl[2]}"
             self.image_pin=  f"https://www.google.com/maps?q={spl[4]},{spl[6]}&label={spl[2]}"
-            print(spl)
+            self.mark_point(spl[4],spl[6])
         except Exception as e:
             print(spl)
             self.image_file.src = "https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/placeholder.jpg"
@@ -541,6 +555,18 @@ class MapFrame(ft.Container):
         self.page.update()
 
 
+    def mark_point(self,lat,lon):
+        self.marked_ref.current.circles = []
+        self.marked_ref.current.circles.append(
+            map.CircleMarker(
+            radius=4,
+            coordinates=map.MapLatitudeLongitude(lat, lon),
+            color=ft.Colors.WHITE,
+            border_color=ft.Colors.RED,
+            border_stroke_width=4,
+            )
+        )
+        
 
     def zoom_to_all_objects(self):
         if not self.circle_layer_ref.current.circles:
