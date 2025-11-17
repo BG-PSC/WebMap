@@ -31,7 +31,8 @@ def main(page: ft.Page):
     # main_row.controls.append(label)
 
     mf = MapFrame(page, lines, kody,robota,centrum,zoom)
-    
+    mf.hide_labels() #wyłącza numery działek przy inicjalizacji
+
     def submit_on_clik(e):
         #mf.visible = not mf.visible
         mf.clear_layers()
@@ -85,7 +86,6 @@ def main(page: ft.Page):
     page.add(mf)
 
     page.theme_mode = ft.ThemeMode.LIGHT
-
 
     page.update()
 
@@ -315,7 +315,7 @@ class MapFrame(ft.Container):
                                                      ], horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                                     alignment=ft.MainAxisAlignment.END
                                                     ),
-                                          ft.Column([zoom_to_allBtn,self.switch_bcgBtn, listBtn, self.hide_labelsBtn,
+                                          ft.Column([zoom_to_allBtn,self.hide_labelsBtn,self.switch_bcgBtn, listBtn, 
                                                   #elBtn
                                                   ],
                                                  alignment=ft.MainAxisAlignment.CENTER,
