@@ -4,20 +4,106 @@ import flet as ft
 import flet_map as map
 import requests
 
+def main(page: ft.Page):
+    debug = False
+    robota ="suchowola" # <<<<---- jednoczesnie nazwa folderu z danymi w repozytorium files/pliki/<robota>
+    centrum = map.MapLatitudeLongitude(53.5429174879,23.1143806578)
+    zoom = 12 
+
+    
+    file = requests.get(f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/{robota}/punkty.txt").text
+    #file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
+    lines = str(file).split("\n")
+    lines = [line.strip() for line in lines if line.strip()]
+    #file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
+    file = requests.get(f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/{robota}/kod-dzialka.txt").text
+    kody = str(file).split("\n")
+    kody = [kod.strip() for kod in kody if kod.strip()]
+    
+    
+    if debug:
+        with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
+            lines = file.read().splitlines()
+            
+        with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
+            kody = file.read().splitlines()
+
+    # main_row.controls.append(label)
+
+    mf = MapFrame(page, lines, kody,robota,centrum,zoom)
+    
+    def submit_on_clik(e):
+        #mf.visible = not mf.visible
+        mf.clear_layers()
+        page.update()
+        #query.value
+        mf.load_values(query.value)
+
+    query = ft.TextField(label="Wprowadź kod otrzymany w zawiadomieniu",
+                         on_submit= lambda e: submit_on_clik(e),
+                         height=50,
+                         col={"xs": 4, "sm": 4, "md": 3})
+    submit = ft.ElevatedButton("Zatwierdź",
+                               on_click= lambda e: submit_on_clik(e),
+                               height=50,
+                               bgcolor=ft.Colors.PRIMARY,
+                               color=ft.Colors.ON_PRIMARY,
+                               col={"xs": 3, "sm": 3, "md": 1})
+
+    logo =ft.GestureDetector(
+        content =ft.Image(
+            src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/logo.png",
+            width=50,
+            height=50,
+            fit=ft.ImageFit.CONTAIN),
+        on_tap=lambda e: page.launch_url("https://bg-p.pl"),
+        mouse_cursor=ft.MouseCursor.CLICK,
+        col={"xs": 1, "sm": 1, "md": 1})
+    
+
+
+    aboutBtn = ft.ElevatedButton(
+        content=ft.Row(
+            controls=[
+                ft.Image(src="https://raw.githubusercontent.com/BG-PSC/WebMap/refs/heads/main/assets/gddkia.png", width=40, height=40),
+                ft.Text("O inwestycji", color=ft.Colors.DEEP_ORANGE)
+            ]
+        ),
+        on_click=lambda e: page.launch_url("https://www.dk79-obwodnicalipska.pl/"),
+        col={"xs": 3, "sm": 3, "md": 1.5},
+        height=50
+    )
+    
+    main_row = ft.ResponsiveRow(
+        controls=[logo,  query,submit, aboutBtn],
+        alignment=ft.MainAxisAlignment.CENTER,
+        vertical_alignment=ft.CrossAxisAlignment.START,
+    )
+
+    page.add(main_row)
+
+    page.add(mf)
+
+    page.theme_mode = ft.ThemeMode.LIGHT
+
+
+    page.update()
+
 class PointButton(ft.TextButton):
     def __init__(self, page: ft.Page, lines):
         super().__init__()
 
 class MapFrame(ft.Container):
-    def __init__(self, page: ft.Page, lines, kody):
+    def __init__(self, page: ft.Page, lines, kody,robota,centrum,zoom):
         super().__init__()
-
+        self.robota=robota  
         self.lines = lines
         self.kody = kody
         self.page = page
         print("Reset mapy")
-        self.current_center = map.MapLatitudeLongitude(53.5429174879,23.1143806578)
-        self.current_zoom = 12
+
+        self.current_center = centrum
+        self.current_zoom = zoom
 
         self.expand = 1
         self.border_radius = ft.border_radius.all(10)
@@ -77,7 +163,7 @@ class MapFrame(ft.Container):
         self.main_map = map.Map(
                     expand=True,
                     initial_center=self.current_center,
-                    initial_zoom=12,
+                    initial_zoom=zoom,
                     min_zoom=10,
                     max_zoom=21,
                     interaction_configuration=map.MapInteractionConfiguration(
@@ -293,7 +379,7 @@ class MapFrame(ft.Container):
 
     def add_lr(self):
 
-        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/lr.txt").text
+        file = requests.get(f"https://bg-psc.github.io/Files/pliki/{self.robota}/lr.txt").text
         lines = str(file).split("\n")
 
         current = ""
@@ -369,7 +455,7 @@ class MapFrame(ft.Container):
         #self.page.update()
 
     def add_labels(self):
-        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/etykiety.txt").text
+        file = requests.get(f"https://bg-psc.github.io/Files/pliki/{self.robota}/etykiety.txt").text
         lines = str(file).split("\n")
 
         for punkt in lines:
@@ -380,7 +466,7 @@ class MapFrame(ft.Container):
     
     def add_plots(self):
 
-        file = requests.get("https://bg-psc.github.io/Files/pliki/suchowola/dzialki.txt").text
+        file = requests.get(f"https://bg-psc.github.io/Files/pliki/{self.robota}/dzialki.txt").text
         lines = str(file).split("\n")
 
         current = ""
@@ -610,87 +696,6 @@ class MapFrame(ft.Container):
 
         self.page.update()
 
-def main(page: ft.Page):
-    debug = False
-
-    
-    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/suchowola/punkty.txt").text
-    #file = requests.get("https://bg-psc.github.io/Files/pliki/punkty.txt").text
-    lines = str(file).split("\n")
-    lines = [line.strip() for line in lines if line.strip()]
-    #file = requests.get("https://bg-psc.github.io/Files/pliki/kod-dzialka.txt").text
-    file = requests.get("https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/suchowola/kod-dzialka.txt").text
-    kody = str(file).split("\n")
-    kody = [kod.strip() for kod in kody if kod.strip()]
-    
-    
-    if debug:
-        with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
-            lines = file.read().splitlines()
-            
-        with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
-            kody = file.read().splitlines()
-
-    # main_row.controls.append(label)
-
-    mf = MapFrame(page, lines, kody)
-    
-    def submit_on_clik(e):
-        #mf.visible = not mf.visible
-        mf.clear_layers()
-        page.update()
-        #query.value
-        mf.load_values(query.value)
-
-    query = ft.TextField(label="Wprowadź kod otrzymany w zawiadomieniu",
-                         on_submit= lambda e: submit_on_clik(e),
-                         height=50,
-                         col={"xs": 4, "sm": 4, "md": 3})
-    submit = ft.ElevatedButton("Zatwierdź",
-                               on_click= lambda e: submit_on_clik(e),
-                               height=50,
-                               bgcolor=ft.Colors.PRIMARY,
-                               color=ft.Colors.ON_PRIMARY,
-                               col={"xs": 3, "sm": 3, "md": 1})
-
-    logo =ft.GestureDetector(
-        content =ft.Image(
-            src="https://raw.githubusercontent.com/BG-PSC/WebMap/main/assets/logo.png",
-            width=50,
-            height=50,
-            fit=ft.ImageFit.CONTAIN),
-        on_tap=lambda e: page.launch_url("https://bg-p.pl"),
-        mouse_cursor=ft.MouseCursor.CLICK,
-        col={"xs": 1, "sm": 1, "md": 1})
-    
-
-
-    aboutBtn = ft.ElevatedButton(
-        content=ft.Row(
-            controls=[
-                ft.Image(src="https://raw.githubusercontent.com/BG-PSC/WebMap/refs/heads/main/assets/gddkia.png", width=40, height=40),
-                ft.Text("O inwestycji", color=ft.Colors.DEEP_ORANGE)
-            ]
-        ),
-        on_click=lambda e: page.launch_url("https://www.dk79-obwodnicalipska.pl/"),
-        col={"xs": 3, "sm": 3, "md": 1.5},
-        height=50
-    )
-    
-    main_row = ft.ResponsiveRow(
-        controls=[logo,  query,submit, aboutBtn],
-        alignment=ft.MainAxisAlignment.CENTER,
-        vertical_alignment=ft.CrossAxisAlignment.START,
-    )
-
-    page.add(main_row)
-
-    page.add(mf)
-
-    page.theme_mode = ft.ThemeMode.LIGHT
-
-
-    page.update()
 
 if __name__ == "__main__":
     site = ft.app(main, view=ft.AppView.WEB_BROWSER)
