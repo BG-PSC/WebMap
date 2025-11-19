@@ -425,7 +425,7 @@ class MapFrame(ft.Container):
                         ft.TextSpan(
                             f"{text}",
                             ft.TextStyle(
-                                size=8,
+                                size=12,
                                 weight=ft.FontWeight.BOLD,
                                 foreground=ft.Paint(
                                 color=ft.Colors.WHITE,
@@ -442,7 +442,7 @@ class MapFrame(ft.Container):
                     value=f"{text}",
                    
                     color=ft.Colors.BLUE,
-                    size=8,
+                    size=12,
                     weight=ft.FontWeight.BOLD,
                     text_align=ft.TextAlign.LEFT
                 ),
