@@ -6,8 +6,8 @@ import requests
 
 def main(page: ft.Page):
     debug = False
-    robota ="suchowola" # <<<<---- jednoczesnie nazwa folderu z danymi w repozytorium files/pliki/<robota>
-    centrum = map.MapLatitudeLongitude(53.5429174879,23.1143806578)
+    robota = "S19"  # <<<<---- jednoczesnie nazwa folderu z danymi w repozytorium files/pliki/<robota>
+    centrum = map.MapLatitudeLongitude(49.64816944, 21.82132439)
     zoom = 12 
 
     
@@ -22,7 +22,7 @@ def main(page: ft.Page):
     
     
     if debug:
-        with open(r"D:\Python\kuba\web_map\Files\pliki\punkty.txt", "r") as file:
+        with open(rf"D:\Python\kuba\web_map\Files\{robota}\punkty.txt", "r") as file:
             lines = file.read().splitlines()
             
         with open(r"D:\Python\kuba\web_map\Files\pliki\kod-dzialka.txt","r") as file:
@@ -70,7 +70,7 @@ def main(page: ft.Page):
                 ft.Text("O inwestycji", color=ft.Colors.DEEP_ORANGE)
             ]
         ),
-        on_click=lambda e: page.launch_url("https://www.obwodnica-suchowoli.pl/"),
+        on_click=lambda e: page.launch_url("http://s19iskrzynia-miejscepiastowe.pl/"),
         col={"xs": 3, "sm": 3, "md": 1.5},
         height=50
     )
@@ -165,7 +165,7 @@ class MapFrame(ft.Container):
                     initial_center=self.current_center,
                     initial_zoom=zoom,
                     min_zoom=10,
-                    max_zoom=21,
+                    max_zoom=22,
                     interaction_configuration=map.MapInteractionConfiguration(
                         flags=map.MapInteractiveFlag.ALL
                     ),
@@ -184,12 +184,13 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/suchowola/{z}/{x}/{y}.png",
+                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/S19/{z}/{x}/{y}.png",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
                             #on_image_error=lambda e: print("TileLayer Error"),
                             pan_buffer=1,
+                            max_zoom=22,
                             
                         ),
                         map.PolylineLayer(
@@ -263,7 +264,7 @@ class MapFrame(ft.Container):
         listBtn.tooltip = "Pokaż listę punktów"
 
         zoom_to_allBtn = ft.ElevatedButton("Pokaż całą mapę",
-                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(53.5429174879,23.1143806578), 12))
+                                    on_click=lambda e: self.main_map.move_to(map.MapLatitudeLongitude(49.64816944, 21.82132439), 13))
 
         self.switch_bcgBtn = ft.ElevatedButton("SATELITA 🛰", on_click=self.switch_bcg)
 
@@ -468,7 +469,6 @@ class MapFrame(ft.Container):
 
         file = requests.get(f"https://bg-psc.github.io/Files/pliki/{self.robota}/dzialki.txt").text
         lines = str(file).split("\n")
-
         current = ""
         temp_l = []
         lrs = []
