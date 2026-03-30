@@ -165,7 +165,7 @@ class MapFrame(ft.Container):
                     initial_center=self.current_center,
                     initial_zoom=zoom,
                     min_zoom=10,
-                    max_zoom=22,
+                    max_zoom=20,
                     interaction_configuration=map.MapInteractionConfiguration(
                         flags=map.MapInteractiveFlag.ALL
                     ),
@@ -375,7 +375,6 @@ class MapFrame(ft.Container):
     def clear_layers(self):
         self.circle_layer_ref.current.circles.clear()
         self.label_ref.current.markers.clear()
-        print(f"Clearing layers: {len(self.circle_layer_ref.current.circles)}, {len(self.label_ref.current.markers)}")
         self.main_map.update()
 
     def add_lr(self):
