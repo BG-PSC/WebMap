@@ -56,7 +56,9 @@ jobs:
             echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}, USER: ${GITHUB_REPOSITORY%/*}, PROJECT_BASE_URL: ${GITHUB_REPOSITORY#*/}"
             flutter config --no-analytics
             flet build web --base-url ${GITHUB_REPOSITORY#*/} --route-url-strategy hash
-
+    - name: Inject GoatCounter
+      run: |
+            sed -i '/<\/body>/i <script data-goatcounter="https://pludrak.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>' build/web/index.html
     - name: Upload Artifact
       uses: actions/upload-pages-artifact@v3
       with:
