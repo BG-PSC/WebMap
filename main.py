@@ -6,8 +6,9 @@ import requests
 
 def main(page: ft.Page):
     debug = False
-    robota = "S19"  # <<<<---- jednoczesnie nazwa folderu z danymi w repozytorium files/pliki/<robota>
-    centrum = map.MapLatitudeLongitude(49.64816944, 21.82132439)
+    robota = "augustow"  # <<<<---- jednoczesnie nazwa folderu z danymi w repozytorium files/pliki/<robota>
+    centrum = map.MapLatitudeLongitude(53.9103462537441, 22.9780873358701
+)
     zoom = 12 
 
     
@@ -72,7 +73,8 @@ def main(page: ft.Page):
         ),
         on_click=lambda e: page.launch_url("http://s19iskrzynia-miejscepiastowe.pl/"),
         col={"xs": 3, "sm": 3, "md": 1.5},
-        height=50
+        height=50,
+        visible=False
     )
     
     main_row = ft.ResponsiveRow(
@@ -184,7 +186,7 @@ class MapFrame(ft.Container):
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/WebMapTest/main/{z}/{x}/{y}.jpg",
                             # url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K/{z}/{x}/{y}.jpg",
-                            url_template="https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/S19/{z}/{x}/{y}.png",
+                            url_template=f"https://raw.githubusercontent.com/BG-PSC/Files/refs/heads/main/ortofotomapa/{robota}"+"/{z}/{x}/{y}.png",
                             #url_template="http://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/HighResolution?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTOFOTOMAPA&STYLE=default&FORMAT=image%2Fjpeg&TILEMATRIXSET=EPSG%3A4326&TILEMATRIX=EPSG%3A4326%3A{z}&TILEROW={x}&TILECOL={y}"
                             #url_template="https://mapy.geoportal.gov.pl/wss/ext/OSM/BaseMap/tms/1.0.0/osm_3857/GLOBAL_WEBMERCATOR/{z}/{x}/{y}.png",
                             #url_template="https://raw.githack.com/Rzezimioszek/Files/main/ortofotomapa/S17K2/{z}/{x}/{y}.jpg",
@@ -559,7 +561,7 @@ class MapFrame(ft.Container):
 
         spl = str(e.control.text).split()
         try:
-            image_url = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{self.robota}/{spl[2]}.jpg"
+            image_url = f"https://raw.githubusercontent.com/BG-PSC/Files/main/pliki/graniczniki/{self.robota}/{spl[2]}.jpeg"
             response = requests.head(image_url)
             if response.status_code == 200:
                 self.image_file.src = image_url
